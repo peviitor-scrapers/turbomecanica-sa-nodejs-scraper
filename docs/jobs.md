@@ -10,18 +10,11 @@
 | Location | MUNICIPIUL BUCUREŞTI, SECTOR 6, B-DUL IULIU MANIU, NR.244 |
 | Website | [https://turbomecanica.ro](https://turbomecanica.ro) |
 | Careers | [https://turbomecanica.ro/en/careers/available-jobs/](https://turbomecanica.ro/en/careers/available-jobs/) |
-| Last Scraped | 2026-10-22 |
+| Last Scraped | 2026-10-23 |
 
-## Current Job Listings (4)
+## Current Job Listings (3)
 
-_Generated: 2026-10-22T10:50:54.934Z_
-
-### Administrator contract client
-
-- **URL:** [https://turbomecanica.ro/job/administrator-contract-client/](https://turbomecanica.ro/job/administrator-contract-client/)
-- **Work Mode:** on-site
-- **Location:** Bucuresti
-- **Status:** scraped
+_Generated: 2026-10-23T10:42:52.693Z_
 
 ### Economist costuri
 
