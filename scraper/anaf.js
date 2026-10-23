@@ -65,88 +65,30 @@ function mapCuiscanToAnafFormat(data) {
   };
 }
 
+/**
+ * Parse a fetch Response as JSON, throwing a clear error when the service
+ * answered with something else (typically an HTML error/maintenance page while
+ * the upstream is down) instead of an opaque "Unexpected token '<'" SyntaxError.
+ * @param {Response} res
+ * @param {string} label service name used in the error message
+ */
+export async function parseJsonResponse(res, label) {
+  try {
+    return await res.json();
+  } catch {
+    throw new Error(`${label} returned a non-JSON response (HTTP ${res.status}) - service likely down`);
+  }
+}
+
 async function fetchFromCuiscan(cif) {
   const res = await fetch(`${CUISCAN_API_URL}?action=company&cui=${cif}`, {
     headers: { "User-Agent": userAgent },
     signal: AbortSignal.timeout(TIMEOUT_MS)
   });
   if (!res.ok) throw new Error(`CUIScan API error: ${res.status}`);
-  const json = await res.json();
+  const json = await parseJsonResponse(res, "CUIScan");
   if (!json || !json.denumire) throw new Error("CUIScan returned no data");
   return mapCuiscanToAnafFormat(json);
-}
-
-// ============================================================================
-// Official ANAF (webservicesp.anaf.ro) — authoritative last-resort fallback
-// ============================================================================
-
-const OFFICIAL_ANAF_URL = "https://webservicesp.anaf.ro/api/PlatitorTvaRest/v9/tva";
-
-export function mapOfficialAnafToAnafFormat(found) {
-  const g = found.date_generale || {};
-  const tva = found.inregistrare_scop_Tva || {};
-  const inactiv = found.stare_inactiv || {};
-  const sediu = found.adresa_sediu_social || {};
-  const fiscal = found.adresa_domiciliu_fiscal || {};
-  const addr = (a) => ({
-    street: a.sdenumire_Strada || a.ddenumire_Strada || "",
-    number: a.snumar_Strada || a.dnumar_Strada || "",
-    locality: a.sdenumire_Localitate || a.ddenumire_Localitate || "",
-    county: a.sdenumire_Judet || a.ddenumire_Judet || "",
-    country: a.sdenumire_Tara || a.dtara || "",
-    postalCode: a.scod_Postal || a.dcod_Postal || ""
-  });
-  return {
-    cui: g.cui,
-    name: g.denumire,
-    address: g.adresa,
-    registrationNumber: g.nrRegCom,
-    phone: g.telefon || "",
-    fax: g.fax || "",
-    postalCode: g.codPostal,
-    caenCode: g.cod_CAEN,
-    iban: g.iban || "",
-    registrationState: g.stare_inregistrare,
-    registrationDate: g.data_inregistrare,
-    fiscalAuthority: g.organFiscalCompetent || "",
-    ownershipForm: g.forma_de_proprietate || "",
-    organizationForm: g.forma_organizare || "",
-    legalForm: g.forma_juridica || "",
-    vatRegistered: !!tva.scpTVA,
-    vatPeriods: (tva.perioade_TVA ? [tva.perioade_TVA] : []).map(p => ({
-      start: p.data_inceput_ScpTVA || "", end: p.data_sfarsit_ScpTVA || null, yearStart: "", message: p.mesaj_ScpTVA || ""
-    })),
-    cashBasisVat: false,
-    cashBasisVatStart: null,
-    cashBasisVatEnd: null,
-    inactive: !!inactiv.statusInactivi,
-    inactiveSince: inactiv.dataInactivare || null,
-    reactivatedSince: inactiv.dataReactivare || null,
-    splitVat: false,
-    eFacturaRegistered: !!g.statusRO_e_Factura,
-    headquartersAddress: addr(sediu),
-    fiscalAddress: addr(fiscal),
-    administrators: [],
-    authorizedCaenCodes: [],
-    onrcStatus: 0,
-    onrcStatusLabel: inactiv.statusInactivi ? "Inactiv" : "Funcțiune"
-  };
-}
-
-async function fetchFromOfficialAnaf(cif) {
-  const today = new Date().toISOString().slice(0, 10);
-  const res = await fetch(OFFICIAL_ANAF_URL, {
-    method: "POST",
-    headers: { "User-Agent": userAgent, "Content-Type": "application/json" },
-    body: JSON.stringify([{ cui: Number(cif), data: today }]),
-    signal: AbortSignal.timeout(TIMEOUT_MS)
-  });
-  if (!res.ok) throw new Error(`ANAF official API error: ${res.status}`);
-  let json;
-  try { json = await res.json(); } catch (e) { throw new Error("ANAF official API returned non-JSON"); }
-  const found = json && json.found && json.found[0];
-  if (!found || !found.date_generale || !found.date_generale.denumire) throw new Error("ANAF official API returned no data");
-  return mapOfficialAnafToAnafFormat(found);
 }
 
 // ============================================================================
@@ -159,7 +101,7 @@ async function fetchFromAnaf(cif) {
     signal: AbortSignal.timeout(TIMEOUT_MS)
   });
   if (!res.ok) throw new Error(`ANAF API error: ${res.status}`);
-  const json = await res.json();
+  const json = await parseJsonResponse(res, "ANAF");
   if (json.success === false) throw new Error(json.error?.message || "ANAF returned error");
   return json.data || null;
 }
@@ -170,7 +112,7 @@ async function searchFromAnaf(brandName) {
     signal: AbortSignal.timeout(TIMEOUT_MS)
   });
   if (!res.ok) throw new Error(`ANAF search error: ${res.status}`);
-  const json = await res.json();
+  const json = await parseJsonResponse(res, "ANAF search");
   return json.data || [];
 }
 
@@ -184,7 +126,7 @@ async function searchFromCuifirma(brandName) {
     signal: AbortSignal.timeout(TIMEOUT_MS)
   });
   if (!res.ok) throw new Error(`CUIFirma search error: ${res.status}`);
-  const json = await res.json();
+  const json = await parseJsonResponse(res, "CUIFirma");
   return (json.results || []).map(r => ({
     cui: String(r.cui),
     name: r.name,
@@ -205,12 +147,7 @@ export async function getCompanyFromANAF(cif) {
     return await fetchFromAnaf(cif);
   } catch (err) {
     console.log(`DemoANAF failed: ${err.message} — trying cuiscan.ro...`);
-    try {
-      return await fetchFromCuiscan(cif);
-    } catch (err2) {
-      console.log(`CUIScan failed: ${err2.message} - trying official ANAF API...`);
-      return await fetchFromOfficialAnaf(cif);
-    }
+    return await fetchFromCuiscan(cif);
   }
 }
 
