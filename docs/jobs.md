@@ -10,11 +10,11 @@
 | Location | MUNICIPIUL BUCUREŞTI, SECTOR 6, B-DUL IULIU MANIU, NR.244 |
 | Website | [https://turbomecanica.ro](https://turbomecanica.ro) |
 | Careers | [https://turbomecanica.ro/en/careers/available-jobs/](https://turbomecanica.ro/en/careers/available-jobs/) |
-| Last Scraped | 2026-10-24 |
+| Last Scraped | 2026-10-25 |
 
 ## Current Job Listings (4)
 
-_Generated: 2026-10-24T09:59:28.476Z_
+_Generated: 2026-10-25T10:23:38.327Z_
 
 ### Administrator contract client
 
