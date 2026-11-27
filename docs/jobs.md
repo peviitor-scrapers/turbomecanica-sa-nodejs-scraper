@@ -10,22 +10,15 @@
 | Location | MUNICIPIUL BUCUREŞTI, SECTOR 6, B-DUL IULIU MANIU, NR.244 |
 | Website | [https://turbomecanica.ro](https://turbomecanica.ro) |
 | Careers | [https://turbomecanica.ro/en/careers/available-jobs/](https://turbomecanica.ro/en/careers/available-jobs/) |
-| Last Scraped | 2026-11-26 |
+| Last Scraped | 2026-11-27 |
 
 ## Current Job Listings (4)
 
-_Generated: 2026-11-26T16:00:26.773Z_
+_Generated: 2026-11-27T15:49:57.611Z_
 
 ### Administrator contract client
 
 - **URL:** [https://turbomecanica.ro/job/administrator-contract-client/](https://turbomecanica.ro/job/administrator-contract-client/)
-- **Work Mode:** on-site
-- **Location:** Bucuresti
-- **Status:** scraped
-
-### Economist costuri
-
-- **URL:** [https://turbomecanica.ro/job/economist-costuri/](https://turbomecanica.ro/job/economist-costuri/)
 - **Work Mode:** on-site
 - **Location:** Bucuresti
 - **Status:** scraped
@@ -40,6 +33,13 @@ _Generated: 2026-11-26T16:00:26.773Z_
 ### Inginer/Proiectant asigurarea calitatii
 
 - **URL:** [https://turbomecanica.ro/job/inginer-proiectant-asigurarea-calitatii/](https://turbomecanica.ro/job/inginer-proiectant-asigurarea-calitatii/)
+- **Work Mode:** on-site
+- **Location:** Bucuresti
+- **Status:** scraped
+
+### Controlor calitate montaj - incercari
+
+- **URL:** [https://turbomecanica.ro/job/controlor-calitate-montaj-incercari/](https://turbomecanica.ro/job/controlor-calitate-montaj-incercari/)
 - **Work Mode:** on-site
 - **Location:** Bucuresti
 - **Status:** scraped
